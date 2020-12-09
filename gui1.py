@@ -21,7 +21,6 @@ class Setting(object):
         self.ui.setupUi(self.window)
         self.window.show()
         MainWindow.hide()
-        # Form.hide()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")

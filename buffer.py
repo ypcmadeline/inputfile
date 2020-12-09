@@ -20,8 +20,6 @@ import property
 
 class parameter(object):
 
-
-
     def __init__(self, const, vary):
         self.const = const
         self.vary = vary
@@ -98,6 +96,7 @@ class parameter(object):
 
             self.check.append(QtWidgets.QCheckBox(self.gridLayoutWidget))
             self.check[i].setText("sweep")
+            # self.check[i].receivers()
             self.check[i].setChecked(self.pp[i].savesweep[0])
             self.gridLayout.addWidget(self.check[i], i, 4, 1, 1)
 
@@ -109,7 +108,6 @@ class parameter(object):
             self.gridLayout.addWidget(self.add[i], i, 5, 1, 1)
             self.btn_grp.addButton(self.add[i], i)
 
-            self.status.append(status.Status(self.combo[i].currentText()))
 
         for i in range(self.const):
             self.cname.append(QtWidgets.QLabel(self.gridLayoutWidget))
@@ -139,8 +137,13 @@ class parameter(object):
 
         self.genBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.genBtn.setText("Generate")
-        self.gridLayout.addWidget(self.genBtn, i + self.vary + 1, 4, 1, 1)
+        self.gridLayout.addWidget(self.genBtn, i + self.vary + 2, 4, 1, 1)
         self.genBtn.clicked.connect(lambda: self.generate_handler())
+
+        self.updateBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.updateBtn.setText("Update")
+        self.gridLayout.addWidget(self.updateBtn, i + self.vary + 1, 4, 1, 1)
+        self.updateBtn.clicked.connect(lambda: self.update())
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -169,14 +172,12 @@ class parameter(object):
 
     def saverfield(self, i, text):
         self.pp[i].saverange[0] = text
-        print(self.pp[i].saverange)
 
     def savescheck(self, i, text):
         self.pp[i].savesweep[0] = text
 
     def savename(self, i, text):
         self.pp[i].savename = text
-        print(self.pp[i].savename)
 
     def addSession(self, button_id):
         for btn in self.btn_grp.buttons():
@@ -190,6 +191,7 @@ class parameter(object):
         self.window.show()
 
     def update(self):
+        print("hihihihi")
         for i in range(self.vary):
             self.rfield[i].setText(self.pp[i].saverange[0])
             self.check[i].setChecked(self.pp[i].savesweep[0])

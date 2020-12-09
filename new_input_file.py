@@ -23,12 +23,8 @@ class inputFile:
 
         for i in range(len(varyParameter)):
             tlist = []
-            print("new")
-            print(varyParameter[i].range)
             for j in range(len(varyParameter[i].range)):
                 num = varyParameter[i].range[j].split(",")
-                print(varyParameter[i].range[j])
-                print(num[0])
                 if varyParameter[i].sweep[j]:
                     # if first range sweep
                     tlist = tlist + list(np.linspace(int(num[0]), int(num[1]), int(num[2]))) \

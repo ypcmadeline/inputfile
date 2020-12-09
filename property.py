@@ -3,6 +3,7 @@ from PySide2.QtCore import QObject, Property, Signal
 
 class property(QObject):
 
+
     def __init__(self, initr=None, inits=None):
         QObject.__init__(self)
         if initr is None:
@@ -11,6 +12,7 @@ class property(QObject):
         if inits is None:
             inits = [False]
         self.sweep = inits
+
 
 
     def setname(self, val):
