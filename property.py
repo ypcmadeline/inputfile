@@ -12,6 +12,7 @@ class property(QObject):
         if inits is None:
             inits = [False]
         self.sweep = inits
+        self.observers = []
 
 
 
@@ -26,12 +27,19 @@ class property(QObject):
 
     def setrlist(self, val):
         self.range = val
+        for callback in self.observers:
+            print("annouce change")
+            callback()
 
     def readslist(self):
         return self.sweep
 
     def setslist(self, val):
         self.sweep = val
+
+    def bind_to(self, callback):
+        print("bound")
+        self.observers.append(callback)
 
     saverange = Property(list, readrlist, setrlist)
     savesweep = Property(list, readslist, setslist)

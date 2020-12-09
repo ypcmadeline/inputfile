@@ -29,6 +29,7 @@ class parameter(object):
         for i in range(vary):
             self.pp.append(property.property())
 
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 700)
@@ -96,7 +97,6 @@ class parameter(object):
 
             self.check.append(QtWidgets.QCheckBox(self.gridLayoutWidget))
             self.check[i].setText("sweep")
-            # self.check[i].receivers()
             self.check[i].setChecked(self.pp[i].savesweep[0])
             self.gridLayout.addWidget(self.check[i], i, 4, 1, 1)
 
@@ -107,6 +107,7 @@ class parameter(object):
             self.add[i].setObjectName(str(i))
             self.gridLayout.addWidget(self.add[i], i, 5, 1, 1)
             self.btn_grp.addButton(self.add[i], i)
+
 
 
         for i in range(self.const):
@@ -137,13 +138,11 @@ class parameter(object):
 
         self.genBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.genBtn.setText("Generate")
-        self.gridLayout.addWidget(self.genBtn, i + self.vary + 2, 4, 1, 1)
+        self.gridLayout.addWidget(self.genBtn, i + self.vary + 1, 4, 1, 1)
         self.genBtn.clicked.connect(lambda: self.generate_handler())
 
-        self.updateBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.updateBtn.setText("Update")
-        self.gridLayout.addWidget(self.updateBtn, i + self.vary + 1, 4, 1, 1)
-        self.updateBtn.clicked.connect(lambda: self.update())
+        for i in range(self.vary):
+            self.pp[i].bind_to(self.update)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -191,7 +190,6 @@ class parameter(object):
         self.window.show()
 
     def update(self):
-        print("hihihihi")
         for i in range(self.vary):
             self.rfield[i].setText(self.pp[i].saverange[0])
             self.check[i].setChecked(self.pp[i].savesweep[0])
