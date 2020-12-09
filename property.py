@@ -1,4 +1,4 @@
-from PySide2.QtCore import QObject, Property
+from PySide2.QtCore import QObject, Property, Signal
 
 
 class property(QObject):
@@ -6,7 +6,7 @@ class property(QObject):
     def __init__(self, initr=None, inits=None):
         QObject.__init__(self)
         if initr is None:
-            initr = [["0,0,0"]]
+            initr = ["0,0,0"]
         self.range = initr
         if inits is None:
             inits = [False]

@@ -17,7 +17,10 @@ from add import *
 import status
 import property
 
+
 class parameter(object):
+
+
 
     def __init__(self, const, vary):
         self.const = const
@@ -25,7 +28,7 @@ class parameter(object):
         self.constPara = []
         self.varyPara = []
         self.pp = []
-        for i in range (vary):
+        for i in range(vary):
             self.pp.append(property.property())
 
     def setupUi(self, MainWindow):
@@ -53,7 +56,6 @@ class parameter(object):
         self.diduadd = []
         self.status = []
 
-
         # list for const paramter label
         self.cname = []
         self.ccombo = []
@@ -64,10 +66,7 @@ class parameter(object):
         self.btn_grp = QButtonGroup()
         self.btn_grp.buttonClicked[int].connect(self.addSession)
 
-
-
         for i in range(self.vary):
-
             self.name.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.name[i].setText("Varying paramter" + str(i + 1))
             self.gridLayout.addWidget(self.name[i], i, 0, 1, 1)
@@ -84,7 +83,7 @@ class parameter(object):
             self.gridLayout.addWidget(self.combo[i], i, 1, 1, 1)
             self.combo[i].adjustSize()
             self.pp[i].savename = "Keithley 2440 cur (A)"
-            self.combo[i].currentTextChanged.connect(partial(self.savename,i))
+            self.combo[i].currentTextChanged.connect(partial(self.savename, i))
 
             self.range.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.range[i].setText("Range")
@@ -92,33 +91,30 @@ class parameter(object):
             self.range[i].adjustSize()
 
             self.rfield.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
-            self.rfield[i].setText("0,0,0")
+            self.rfield[i].setText(self.pp[i].saverange[0])
             self.gridLayout.addWidget(self.rfield[i], i, 3, 1, 1)
             # save range property whenever text changed
-            self.rfield[i].textChanged.connect(partial(self.saverfield,i))
+            self.rfield[i].textChanged.connect(partial(self.saverfield, i))
 
             self.check.append(QtWidgets.QCheckBox(self.gridLayoutWidget))
             self.check[i].setText("sweep")
+            self.check[i].setChecked(self.pp[i].savesweep[0])
             self.gridLayout.addWidget(self.check[i], i, 4, 1, 1)
 
-            self.check[i].clicked.connect(partial(self.savescheck,i))
-
+            self.check[i].clicked.connect(partial(self.savescheck, i))
 
             self.add.append(QtWidgets.QPushButton(self.gridLayoutWidget))
             self.add[i].setText("Add")
             self.add[i].setObjectName(str(i))
             self.gridLayout.addWidget(self.add[i], i, 5, 1, 1)
             self.btn_grp.addButton(self.add[i], i)
-            noadd = False
-            self.diduadd.append(noadd)
 
             self.status.append(status.Status(self.combo[i].currentText()))
 
         for i in range(self.const):
-
             self.cname.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.cname[i].setText("Constant paramter" + str(i + 1))
-            self.gridLayout.addWidget(self.cname[i], i+self.vary, 0, 1, 1)
+            self.gridLayout.addWidget(self.cname[i], i + self.vary, 0, 1, 1)
             self.cname[i].adjustSize()
 
             self.ccombo.append(QtWidgets.QComboBox(self.gridLayoutWidget))
@@ -129,26 +125,23 @@ class parameter(object):
             self.ccombo[i].addItem("Angle")
             self.ccombo[i].addItem("MFLI - x")
             self.ccombo[i].addItem("MFLI - y")
-            self.gridLayout.addWidget(self.ccombo[i], i+self.vary, 1, 1, 1)
+            self.gridLayout.addWidget(self.ccombo[i], i + self.vary, 1, 1, 1)
             self.ccombo[i].adjustSize()
 
             self.cvalue.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.cvalue[i].setText("Constant Value")
-            self.gridLayout.addWidget(self.cvalue[i], i+self.vary, 2, 1, 1)
+            self.gridLayout.addWidget(self.cvalue[i], i + self.vary, 2, 1, 1)
             self.cvalue[i].adjustSize()
 
             self.crfield.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
-            self.crfield[i].setText("const value")
-            self.gridLayout.addWidget(self.crfield[i], i+self.vary, 3, 1, 1)
-
+            self.crfield[i].setText("const")
+            self.gridLayout.addWidget(self.crfield[i], i + self.vary, 3, 1, 1)
 
         self.genBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.genBtn.setText("Generate")
-        self.gridLayout.addWidget(self.genBtn, i + self.vary+1, 4, 1, 1)
+        self.gridLayout.addWidget(self.genBtn, i + self.vary + 1, 4, 1, 1)
         self.genBtn.clicked.connect(lambda: self.generate_handler())
 
-
-        print(self.diduadd)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 422, 22))
@@ -158,23 +151,15 @@ class parameter(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def generate_handler(self):
         # varying
         for i in range(self.vary):
-            if self.diduadd[i]:
-                #yes i did add
-                print(self.status[i].range)
-                self.varyPara.append(varyPara.VaryPara(self.status[i].name, self.status[i].range, self.status[i].sweep))
-            else:
-                #nah
-                list = self.pp[i].saverange
-                slist = self.pp[i].savesweep
-                name = self.pp[i].savename
-                self.varyPara.append(varyPara.VaryPara(name, list, slist))
-                # self.varyPara.append(varyPara.VaryPara(self.combo[i].currentText(), list, slist))
+            list = self.pp[i].saverange
+            slist = self.pp[i].savesweep
+            name = self.pp[i].savename
+            self.varyPara.append(varyPara.VaryPara(name, list, slist))
 
         # const
         for i in range(self.const):
@@ -183,32 +168,20 @@ class parameter(object):
         file = new_input_file.inputFile(self.varyPara, self.constPara)
 
     def saverfield(self, i, text):
-        text = [text]
-        t = self.pp[i].saverange
-        t[0] = text
-        # self.pp[i].saverange = text
+        self.pp[i].saverange[0] = text
         print(self.pp[i].saverange)
 
     def savescheck(self, i, text):
-        text = [text]
-        self.pp[i].savesweep = text
+        self.pp[i].savesweep[0] = text
 
-    def savename(self,i, text):
+    def savename(self, i, text):
         self.pp[i].savename = text
         print(self.pp[i].savename)
 
     def addSession(self, button_id):
         for btn in self.btn_grp.buttons():
             if btn is self.btn_grp.button(button_id):
-                self.diduadd[button_id] = True
-                #update status
-                # self.status[button_id].setName(self.combo[button_id].currentText())
-                # list = [self.rfield[button_id].text()]
-                # self.status[button_id].addRange(list)
-                # self.status[button_id].addSweep(self.check[button_id].isChecked())
-                # self.openwindow(self.status[button_id])
                 self.openwindow(self.pp[button_id])
-                print("h")
 
     def openwindow(self, status):
         self.window = QtWidgets.QMainWindow()
@@ -216,10 +189,10 @@ class parameter(object):
         self.ui.setupUi(self.window)
         self.window.show()
 
-
-
-
-
+    def update(self):
+        for i in range(self.vary):
+            self.rfield[i].setText(self.pp[i].saverange[0])
+            self.check[i].setChecked(self.pp[i].savesweep[0])
 
 
 if __name__ == "__main__":
@@ -227,7 +200,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     setParameter = QtWidgets.QMainWindow()
-    ui = parameter(3,2)
+    ui = parameter(3, 2)
     ui.setupUi(setParameter)
     setParameter.show()
     sys.exit(app.exec_())

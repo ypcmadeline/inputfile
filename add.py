@@ -11,13 +11,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import property
 import status
+import buffer
 
 
 class add(object):
 
     def __init__(self, prop):
         self.pp = prop
-
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -53,8 +53,7 @@ class add(object):
             self.gridLayout.addWidget(self.rlabel, i, 1, 1, 1)
 
             self.rfield.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
-            print(self.pp.saverange[i][0])
-            self.rfield[i].setText(self.pp.saverange[i][0])
+            self.rfield[i].setText(self.pp.saverange[i])
             self.gridLayout.addWidget(self.rfield[i], i, 2, 1, 1)
 
             self.cbox.append(QtWidgets.QCheckBox(self.gridLayoutWidget))
@@ -97,15 +96,16 @@ class add(object):
 
     def addHandler(self):
         rangelist = []
+        sweeplist = []
         for i in range (len(self.pp.saverange) + 1):
             rangelist.append(self.rfield[i].text())
+            sweeplist.append(self.cbox[i].isChecked())
+        self.pp.saverange = rangelist
+        self.pp.savesweep = sweeplist
+        self.addrow()
+        print(buffer.parameter.test)
 
-        print(rangelist)
-        # list = [self.rfield[len(self.state.range)].text()]
-        # self.state.addRange(list)
-        # print(self.state.range)
-        # self.state.addSweep(self.cbox[len(self.state.sweep)].isChecked())
-        # self.addrow()
+
 
 if __name__ == "__main__":
     import sys
