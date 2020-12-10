@@ -144,7 +144,7 @@ class parameter(object):
 
             self.cothername.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
             self.gridLayout.addWidget(self.cothername[i], i + self.vary, 3, 1, 1)
-            # self.cothername[i].textChanged.connect(partial(self.savename, i))
+            self.cothername[i].textChanged.connect(partial(self.changetoother, i))
 
             self.cvalue.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.cvalue[i].setText("Constant Value")
@@ -216,6 +216,9 @@ class parameter(object):
         for btn in self.btn_grp.buttons():
             if btn is self.btn_grp.button(button_id):
                 self.openwindow(self.pp[button_id])
+
+    def changetoother(self,i):
+        self.ccombo[i].setCurrentText("Other")
 
     def openwindow(self, status):
         self.window = QtWidgets.QMainWindow()
