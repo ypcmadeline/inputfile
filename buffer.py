@@ -29,7 +29,6 @@ class parameter(object):
         for i in range(vary):
             self.pp.append(property.property())
 
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 700)
@@ -52,8 +51,8 @@ class parameter(object):
         self.rfield = []
         self.check = []
         self.add = []
-        self.diduadd = []
-        self.status = []
+        self.other = []
+        self.othername = []
 
         # list for const paramter label
         self.cname = []
@@ -61,6 +60,8 @@ class parameter(object):
         self.cvalue = []
         self.crfield = []
         self.cadd = []
+        self.cother = []
+        self.cothername = []
 
         self.btn_grp = QButtonGroup()
         self.btn_grp.buttonClicked[int].connect(self.addSession)
@@ -79,36 +80,44 @@ class parameter(object):
             self.combo[i].addItem("Angle")
             self.combo[i].addItem("MFLI - x")
             self.combo[i].addItem("MFLI - y")
+            self.combo[i].addItem("Other")
             self.gridLayout.addWidget(self.combo[i], i, 1, 1, 1)
             self.combo[i].adjustSize()
             self.pp[i].savename = "Keithley 2440 cur (A)"
             self.combo[i].currentTextChanged.connect(partial(self.savename, i))
 
+            self.other.append(QtWidgets.QLabel(self.gridLayoutWidget))
+            self.other[i].setText("Other: ")
+            self.gridLayout.addWidget(self.other[i], i, 2, 1, 1)
+            self.other[i].adjustSize()
+
+            self.othername.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
+            self.gridLayout.addWidget(self.othername[i], i, 3, 1, 1)
+            self.othername[i].textChanged.connect(partial(self.savename, i))
+
             self.range.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.range[i].setText("Range")
-            self.gridLayout.addWidget(self.range[i], i, 2, 1, 1)
+            self.gridLayout.addWidget(self.range[i], i, 4, 1, 1)
             self.range[i].adjustSize()
 
             self.rfield.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
             self.rfield[i].setText(self.pp[i].saverange[0])
-            self.gridLayout.addWidget(self.rfield[i], i, 3, 1, 1)
+            self.gridLayout.addWidget(self.rfield[i], i, 5, 1, 1)
             # save range property whenever text changed
             self.rfield[i].textChanged.connect(partial(self.saverfield, i))
 
             self.check.append(QtWidgets.QCheckBox(self.gridLayoutWidget))
             self.check[i].setText("sweep")
             self.check[i].setChecked(self.pp[i].savesweep[0])
-            self.gridLayout.addWidget(self.check[i], i, 4, 1, 1)
+            self.gridLayout.addWidget(self.check[i], i, 6, 1, 1)
 
             self.check[i].clicked.connect(partial(self.savescheck, i))
 
             self.add.append(QtWidgets.QPushButton(self.gridLayoutWidget))
             self.add[i].setText("Add")
             self.add[i].setObjectName(str(i))
-            self.gridLayout.addWidget(self.add[i], i, 5, 1, 1)
+            self.gridLayout.addWidget(self.add[i], i, 7, 1, 1)
             self.btn_grp.addButton(self.add[i], i)
-
-
 
         for i in range(self.const):
             self.cname.append(QtWidgets.QLabel(self.gridLayoutWidget))
@@ -124,17 +133,35 @@ class parameter(object):
             self.ccombo[i].addItem("Angle")
             self.ccombo[i].addItem("MFLI - x")
             self.ccombo[i].addItem("MFLI - y")
+            self.ccombo[i].addItem("Other")
             self.gridLayout.addWidget(self.ccombo[i], i + self.vary, 1, 1, 1)
             self.ccombo[i].adjustSize()
 
+            self.cother.append(QtWidgets.QLabel(self.gridLayoutWidget))
+            self.cother[i].setText("Other")
+            self.gridLayout.addWidget(self.cother[i], i + self.vary, 2, 1, 1)
+            self.cother[i].adjustSize()
+
+            self.cothername.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
+            self.gridLayout.addWidget(self.cothername[i], i + self.vary, 3, 1, 1)
+            # self.cothername[i].textChanged.connect(partial(self.savename, i))
+
             self.cvalue.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.cvalue[i].setText("Constant Value")
-            self.gridLayout.addWidget(self.cvalue[i], i + self.vary, 2, 1, 1)
+            self.gridLayout.addWidget(self.cvalue[i], i + self.vary, 4, 1, 1)
             self.cvalue[i].adjustSize()
 
             self.crfield.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
             self.crfield[i].setText("const")
-            self.gridLayout.addWidget(self.crfield[i], i + self.vary, 3, 1, 1)
+            self.gridLayout.addWidget(self.crfield[i], i + self.vary, 5, 1, 1)
+
+        self.fname = QtWidgets.QLabel(self.gridLayoutWidget)
+        self.fname.setText("File name: ")
+        self.gridLayout.addWidget(self.fname, i + self.vary + 1, 0, 1, 1)
+
+        self.filename = QtWidgets.QLineEdit(self.gridLayoutWidget)
+        self.filename.setText("filename")
+        self.gridLayout.addWidget(self.filename, i + self.vary + 1, 1, 1, 1)
 
         self.genBtn = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.genBtn.setText("Generate")
@@ -165,9 +192,13 @@ class parameter(object):
 
         # const
         for i in range(self.const):
-            self.constPara.append(constPara.ConstPara(self.ccombo[i].currentText(), self.crfield[i].text()))
+            if self.ccombo[i].currentText() == "Other":
+                name = self.cothername[i].text()
+            else:
+                name = self.ccombo[i].currentText()
+            self.constPara.append(constPara.ConstPara(name, self.crfield[i].text()))
 
-        file = new_input_file.inputFile(self.varyPara, self.constPara)
+        file = new_input_file.inputFile(self.filename.text(), self.varyPara, self.constPara)
 
     def saverfield(self, i, text):
         self.pp[i].saverange[0] = text
@@ -176,7 +207,10 @@ class parameter(object):
         self.pp[i].savesweep[0] = text
 
     def savename(self, i, text):
+        if self.combo[i].currentText() != "Other":
+            self.combo[i].setCurrentText("Other")
         self.pp[i].savename = text
+        print(self.pp[i].savename)
 
     def addSession(self, button_id):
         for btn in self.btn_grp.buttons():

@@ -28,7 +28,6 @@ class property(QObject):
     def setrlist(self, val):
         self.range = val
         for callback in self.observers:
-            print("annouce change")
             callback()
 
     def readslist(self):
@@ -36,9 +35,10 @@ class property(QObject):
 
     def setslist(self, val):
         self.sweep = val
+        for callback in self.observers:
+            callback()
 
     def bind_to(self, callback):
-        print("bound")
         self.observers.append(callback)
 
     saverange = Property(list, readrlist, setrlist)
@@ -46,10 +46,4 @@ class property(QObject):
     savename = Property(str, readname, setname)
 
 
-obj = property()
 
-obj.saverange = [[47, 2, 2]]
-obj.savesweep = [True]
-
-print(obj.saverange)
-print(obj.savesweep)

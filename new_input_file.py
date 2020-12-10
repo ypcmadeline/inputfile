@@ -4,12 +4,12 @@ import constPara
 
 class inputFile:
 
-    def __init__(self, varyParameter, constParameter):
+    def __init__(self, name, varyParameter, constParameter):
         self.vary_name = []
         self.range_list = []
         self.sweep = []
         for i in range(len(varyParameter)):
-            self.vary_name.append(varyParameter[i].getName)
+            self.vary_name.append(varyParameter[i].name)
 
         self.const_name = []
         self.const_value = []
@@ -18,8 +18,8 @@ class inputFile:
             self.const_value.append(constParameter[i].getValue())
         self.write_list = []
         self.file_list = []
-        self.csv = "sample.csv"
-        # self.f = open(self.csv, 'w+', newline='')
+        self.csv = name + ".csv"
+        self.f = open(self.csv, 'w+', newline='')
 
         for i in range(len(varyParameter)):
             tlist = []
@@ -32,9 +32,9 @@ class inputFile:
                 else:
                     tlist = tlist + list(np.linspace(int(num[0]), int(num[1]), int(num[2])))
             self.write_list.append(tlist)
-        # self.writeHead()
+        self.writeHead()
         self.recurse(len(varyParameter), len(varyParameter))
-        # self.f.close()
+        self.f.close()
 
     def writeHead(self):
         name_list = self.vary_name + self.const_name
@@ -52,8 +52,8 @@ class inputFile:
             # else:
             self.file_list[t - n] = self.write_list[n - 1][i]
             if len(self.file_list) == t and n == 1:
-                # self.f.csv_write = csv.writer(self.f)
-                # self.f.csv_write.writerow(self.file_list + self.const_value)
-                # self.f.flush()
+                self.f.csv_write = csv.writer(self.f)
+                self.f.csv_write.writerow(self.file_list + self.const_value)
+                self.f.flush()
                 print(self.file_list + self.const_value)
             self.recurse(n - 1, t)
