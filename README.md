@@ -8,7 +8,7 @@ The project is used to generate an csv file that contains various input paramete
 REQUIREMENTS
 ------------
 
-This module requires the following modules:
+This project requires the following modules:
 
  * pyQT5
  * numpy
