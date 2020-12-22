@@ -1,6 +1,8 @@
 import csv
 import numpy as np
-import constPara
+import ErrorPane
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 class inputFile:
 
@@ -19,22 +21,28 @@ class inputFile:
         self.write_list = []
         self.file_list = []
         self.csv = name + ".csv"
-        self.f = open(self.csv, 'w+', newline='')
+        # self.f = open(self.csv, 'w+', newline='')
 
-        for i in range(len(varyParameter)):
-            tlist = []
-            for j in range(len(varyParameter[i].range)):
-                num = varyParameter[i].range[j].split(",")
-                if varyParameter[i].sweep[j]:
-                    # if first range sweep
-                    tlist = tlist + list(np.linspace(int(num[0]), int(num[1]), int(num[2]))) \
-                           + list(np.linspace(int(num[1]), int(num[0]), int(num[2])))
-                else:
-                    tlist = tlist + list(np.linspace(int(num[0]), int(num[1]), int(num[2])))
-            self.write_list.append(tlist)
-        self.writeHead()
-        self.recurse(len(varyParameter), len(varyParameter))
-        self.f.close()
+        try:
+            for i in range(len(varyParameter)):
+                tlist = []
+                for j in range(len(varyParameter[i].range)):
+                    num = varyParameter[i].range[j].split(",")
+                    if varyParameter[i].sweep[j]:
+                        # if first range sweep
+                        tlist = tlist + list(np.linspace(float(num[0]), float(num[1]), int(num[2]))) \
+                                + list(np.linspace(float(num[1]), float(num[0]), int(num[2])))
+                    else:
+                        tlist = tlist + list(np.linspace(float(num[0]), float(num[1]), int(num[2])))
+                if (not tlist):
+                    self.popErrorWindow("range doesnt make sense at " + str(i + 1) + "th vary item.")
+                self.write_list.append(tlist)
+            # self.writeHead()
+            self.recurse(len(varyParameter), len(varyParameter))
+            # self.f.close()
+        except:
+            self.popErrorWindow("range doesnt make sense at " + str(i + 1) + "th vary item.")
+
 
     def writeHead(self):
         name_list = self.vary_name + self.const_name
@@ -52,8 +60,14 @@ class inputFile:
             # else:
             self.file_list[t - n] = self.write_list[n - 1][i]
             if len(self.file_list) == t and n == 1:
-                self.f.csv_write = csv.writer(self.f)
-                self.f.csv_write.writerow(self.file_list + self.const_value)
-                self.f.flush()
+                # self.f.csv_write = csv.writer(self.f)
+                # self.f.csv_write.writerow(self.file_list + self.const_value)
+                # self.f.flush()
                 print(self.file_list + self.const_value)
             self.recurse(n - 1, t)
+
+    def popErrorWindow(self, msg):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = ErrorPane.error(msg)
+        self.ui.setupUi(self.window)
+        self.window.show()

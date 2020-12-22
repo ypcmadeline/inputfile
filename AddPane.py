@@ -1,14 +1,12 @@
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
-import property
 import status
-import buffer
+import re
+import ErrorPane
 
 
 class add(object):
-
     signal = pyqtSignal(int)
 
     def __init__(self, prop):
@@ -17,11 +15,11 @@ class add(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(831, 591)
-        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(440, 510, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
+        # self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
+        # self.buttonBox.setGeometry(QtCore.QRect(440, 510, 341, 32))
+        # self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        # self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        # self.buttonBox.setObjectName("buttonBox")
 
         self.gridLayoutWidget = QtWidgets.QWidget(Dialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(50, 120, 571, 101))
@@ -63,9 +61,9 @@ class add(object):
         self.addBtn.setText("Save")
         self.addBtn.clicked.connect(lambda: self.addHandler())
 
-        self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(lambda: Dialog.accept)
-        self.buttonBox.rejected.connect(lambda: Dialog.reject)
+        # self.retranslateUi(Dialog)
+        # self.buttonBox.accepted.connect(lambda: Dialog.accept)
+        # self.buttonBox.rejected.connect(lambda: Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def addrow(self):
@@ -92,16 +90,32 @@ class add(object):
     def addHandler(self):
         rangelist = []
         sweeplist = []
-        for i in range (len(self.pp.saverange) + 1):
-            rangelist.append(self.rfield[i].text())
+        for i in range(len(self.pp.saverange) + 1):
+            # check range format
+            getrange = self.rfield[i].text()
+            check = self.checkrange(getrange,i)
+            if not check:
+                return
+            # if no wrong format -> continue
+            rangelist.append(getrange)
             sweeplist.append(self.cbox[i].isChecked())
         self.pp.saverange = rangelist
         self.pp.savesweep = sweeplist
         self.addrow()
 
+    def checkrange(self, text, i):
+        y = re.fullmatch("[0-9]*[,][0-9]*[,][0-9]*", text)
+        if y is None:
+            self.popErrorWindow("Wrong input range format at "+str(i)+"th item.")
+            return False
+        return True
 
 
-
+    def popErrorWindow(self, msg):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = ErrorPane.error(msg)
+        self.ui.setupUi(self.window)
+        self.window.show()
 
 
 if __name__ == "__main__":
