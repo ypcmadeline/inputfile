@@ -15,11 +15,6 @@ class add(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(831, 591)
-        # self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        # self.buttonBox.setGeometry(QtCore.QRect(440, 510, 341, 32))
-        # self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        # self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
-        # self.buttonBox.setObjectName("buttonBox")
 
         self.gridLayoutWidget = QtWidgets.QWidget(Dialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(50, 120, 571, 101))
@@ -31,6 +26,7 @@ class add(object):
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(30, 20, 47, 12))
         self.label.setText(self.pp.savename)
+        self.label.adjustSize()
 
         self.index = []
         self.rfield = []
@@ -61,9 +57,6 @@ class add(object):
         self.addBtn.setText("Save")
         self.addBtn.clicked.connect(lambda: self.addHandler())
 
-        # self.retranslateUi(Dialog)
-        # self.buttonBox.accepted.connect(lambda: Dialog.accept)
-        # self.buttonBox.rejected.connect(lambda: Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def addrow(self):
@@ -83,9 +76,6 @@ class add(object):
         self.cbox[length].setText("sweep")
         self.gridLayout.addWidget(self.cbox[length], length, 3, 1, 1)
 
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
     def addHandler(self):
         rangelist = []
@@ -106,7 +96,7 @@ class add(object):
     def checkrange(self, text, i):
         y = re.fullmatch("[0-9]*[,][0-9]*[,][0-9]*", text)
         if y is None:
-            self.popErrorWindow("Wrong input range format at "+str(i)+"th item.")
+            self.popErrorWindow("Wrong input range format at "+str(i+1)+"th item.")
             return False
         return True
 

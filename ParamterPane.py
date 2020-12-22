@@ -30,14 +30,14 @@ class parameter(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1000, 700)
+        MainWindow.resize(1200, 800)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(40, 30, 171, 16))
         self.label.setText("Parameter Setting")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(40, 80, 600, 600))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(40, 80, 1000, 700))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -244,7 +244,7 @@ class parameter(object):
             numbers = text.split(",")
             check1 = self.checknum(numbers[0],i)
             check2 = self.checknum(numbers[1],i)
-            check3 = numbers[2].isnumeric()
+            check3 = numbers[2].isdigit()
             if not (check1 and check2 and check3):
                 self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th vary item.")
             return check1 and check2 and check3

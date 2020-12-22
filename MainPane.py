@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from ParamterPane import *
+import ErrorPane
 
 
 
@@ -88,8 +89,24 @@ class Setting(object):
 
     def btn_ok_handler(self):
         vary = self.textEdit.toPlainText()
+        if not self.checknum(vary):
+            return
         const = self.textEdit_2.toPlainText()
+        if not self.checknum(const):
+            return
         self.openwindow(int(const), int(vary))
+
+    def checknum(self, text):
+        if text.isdigit():
+            self.popErrorWindow("Input must be integer")
+            return False
+        return True
+
+    def popErrorWindow(self, msg):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = ErrorPane.error(msg)
+        self.ui.setupUi(self.window)
+        self.window.show()
 
 
 if __name__ == "__main__":
