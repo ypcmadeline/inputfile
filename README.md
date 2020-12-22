@@ -1,4 +1,4 @@
-# inputfile
+# Inputfile Generator
 CONTENTS OF THIS FILE
 ---------------------
 
