@@ -37,7 +37,7 @@ class inputFile:
                 if (not tlist):
                     self.popErrorWindow("range doesnt make sense at " + str(i + 1) + "th vary item.")
                 self.write_list.append(tlist)
-            # self.writeHead()
+            self.writeHead()
             self.recurse(len(varyParameter), len(varyParameter))
             # self.f.close()
         except:
@@ -46,9 +46,10 @@ class inputFile:
 
     def writeHead(self):
         name_list = self.vary_name + self.const_name
-        self.f.csv_write = csv.writer(self.f)
-        self.f.csv_write.writerow(name_list)
-        self.f.flush()
+        # self.f.csv_write = csv.writer(self.f)
+        # self.f.csv_write.writerow(name_list)
+        # self.f.flush()
+        print(name_list)
 
     def recurse(self, n, t):
         if n <= 0:

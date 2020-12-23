@@ -94,12 +94,70 @@ class add(object):
         self.addrow()
 
     def checkrange(self, text, i):
-        y = re.fullmatch("[0-9]*[,][0-9]*[,][0-9]*", text)
-        if y is None:
-            self.popErrorWindow("Wrong input range format at "+str(i+1)+"th item.")
+        try:
+            numbers = text.split(",")
+            num1 = numbers[0]
+            num2 = numbers[1]
+            check1 = self.checknum(num1, i)
+            check2 = self.checknum(num2, i)
+            check3 = numbers[2].isdigit()
+            checkbound1 = self.checkboundary(num1, i)
+            checkbound2 = self.checkboundary(num2, i)
+            if not (check1 and check2 and check3):
+                self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th item.")
+            return check1 and check2 and check3 and checkbound1 and checkbound2
+        except:
+            self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th item.")
+            return False
+
+    def checknum(self, text, i):
+        y = re.fullmatch("[0-9]*[.][0-9]*", text)
+        x = re.fullmatch("[0-9]*", text)
+        if (y is None) and (x is None):
+            self.popErrorWindow("Range must be integers/float at " + str(i + 1) + "th vary item.")
             return False
         return True
 
+
+    def checkboundary(self, num, index):
+        try:
+            file1 = open("boundary.txt", "r+")
+            text = file1.readlines()
+            for i in range(len(text)):
+                text[i] = text[i].replace('\n', '')
+                x = re.split("<=|>=|<|>", text[i])
+                y = re.findall("<=|>=|<|>", text[i])
+                y = y[0]
+                if self.label.text() == x[0]:
+                    if y == ">":
+                        if not float(num) > float(x[1]):
+                            file1.close()
+                            self.popErrorWindow(
+                                "Warning: Value at " + str(index + 1) + "th item should > " + str(x[1]))
+                            return False
+                    if y == "<":
+                        if not float(num) < float(x[1]):
+                            file1.close()
+                            self.popErrorWindow(
+                                "Warning: Value at " + str(index + 1) + "th item should < " + str(x[1]))
+                            return False
+                    if y == ">=":
+                        if not float(num) >= float(x[1]):
+                            file1.close()
+                            self.popErrorWindow(
+                                "Warning: Value at " + str(index + 1) + "th item should >= " + str(x[1]))
+                            return False
+                    if y == "<=":
+                        if not float(num) <= float(x[1]):
+                            file1.close()
+                            self.popErrorWindow(
+                                "Warning: Value at " + str(index + 1) + "th item should <= " + str(x[1]))
+                            return False
+            file1.close()
+            return True
+        except:
+            self.popErrorWindow("Fail to read boundary.txt")
+            return False
 
     def popErrorWindow(self, msg):
         self.window = QtWidgets.QMainWindow()

@@ -83,7 +83,7 @@ class parameter(object):
             self.gridLayout.addWidget(self.combo[i], i, 1, 1, 1)
             self.combo[i].adjustSize()
             self.pp[i].savename = "Keithley 2440 cur (A)"
-            self.combo[i].currentTextChanged.connect(partial(self.changetoother, i))
+            self.combo[i].currentTextChanged.connect(partial(self.changetoother, i, True))
 
             self.other.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.other[i].setText("Other: ")
@@ -143,7 +143,7 @@ class parameter(object):
 
             self.cothername.append(QtWidgets.QLineEdit(self.gridLayoutWidget))
             self.gridLayout.addWidget(self.cothername[i], i + self.vary, 3, 1, 1)
-            self.cothername[i].textChanged.connect(partial(self.changetoother, i))
+            self.cothername[i].textChanged.connect(partial(self.changetoother, i, False))
 
             self.cvalue.append(QtWidgets.QLabel(self.gridLayoutWidget))
             self.cvalue[i].setText("Constant Value")
@@ -184,19 +184,20 @@ class parameter(object):
     def generate_handler(self):
         # varying
         for i in range(self.vary):
+            slist = self.pp[i].savesweep
+            name = self.pp[i].savename
             list = self.pp[i].saverange
             check = self.checkrange(self.rfield[i].text(), i)
             if not check:
                 return
-            slist = self.pp[i].savesweep
-            name = self.pp[i].savename
             self.varyPara.append(varyPara.VaryPara(name, list, slist))
 
         # const
         for i in range(self.const):
             const = self.crfield[i].text()
-            check = self.checknum(const, i)
-            if not check:
+            check = self.checknum(const, i, False)
+            checkbound = self.checkboundary(const, i, False)
+            if not (check and checkbound):
                 return
             if self.ccombo[i].currentText() == "Other":
                 name = self.cothername[i].text()
@@ -218,6 +219,7 @@ class parameter(object):
         if self.combo[i].currentText() != "Other":
             self.combo[i].setCurrentText("Other")
         self.pp[i].savename = text
+        self.pp[i].setname(text)
         print(self.pp[i].savename)
 
     def addSession(self, button_id):
@@ -225,8 +227,17 @@ class parameter(object):
             if btn is self.btn_grp.button(button_id):
                 self.openwindow(self.pp[button_id])
 
-    def changetoother(self, i):
-        self.ccombo[i].setCurrentText("Other")
+    def changetoother(self, i, vary):
+        if vary:
+            if self.othername[i].text() != "":
+                self.combo[i].setCurrentText("Other")
+                self.pp[i].savename = self.othername[i].text()
+            self.pp[i].setname(self.combo[i].currentText())
+            print("here is change tgt")
+            print(self.pp[i].savename)
+        else:
+            if self.cothername[i].text() != "":
+                self.ccombo[i].setCurrentText("Other")
 
     def openwindow(self, status):
         self.window = QtWidgets.QMainWindow()
@@ -242,28 +253,100 @@ class parameter(object):
     def checkrange(self, text, i):
         try:
             numbers = text.split(",")
-            check1 = self.checknum(numbers[0],i)
-            check2 = self.checknum(numbers[1],i)
+            num1 = numbers[0]
+            num2 = numbers[1]
+            check1 = self.checknum(num1, i, True)
+            check2 = self.checknum(num2, i, True)
             check3 = numbers[2].isdigit()
+            checkbound1 = self.checkboundary(num1, i, True)
+            checkbound2 = self.checkboundary(num2, i, True)
             if not (check1 and check2 and check3):
                 self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th vary item.")
-            return check1 and check2 and check3
+            return check1 and check2 and check3 and checkbound1 and checkbound2
         except:
-            self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th vary item.")
+            self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th vary item hh.")
             return False
 
-        # y = re.fullmatch("[0-9]*[,][0-9]*[,][0-9]*", text)
-        # if y is None:
-        #     self.popErrorWindow("Wrong input range format at " + str(i+1) + "th vary item.")
-        #     return False
-        # return True
+    def checkboundary(self, num, index, vary):
+        try:
+            file1 = open("boundary.txt", "r+")
+            text = file1.readlines()
+            for i in range(len(text)):
+                text[i] = text[i].replace('\n', '')
+                x = re.split("<=|>=|<|>", text[i])
+                y = re.findall("<=|>=|<|>", text[i])
+                y = y[0]
+                if vary:
+                    name = self.pp[index].savename
+                    if name == x[0]:
+                        if y == ">":
+                            if not float(num) > float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th vary item should > " + str(x[1]))
+                                return False
+                        if y == "<":
+                            if not float(num) < float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th vary item should < " + str(x[1]))
+                                return False
+                        if y == ">=":
+                            if not float(num) >= float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th vary item should >= " + str(x[1]))
+                                return False
+                        if y == "<=":
+                            if not float(num) <= float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th vary item should <= " + str(x[1]))
+                                return False
+                else:
+                    if self.ccombo[index].currentText() == "Other":
+                        name = self.cothername[index].text()
+                    else:
+                        name = self.ccombo[index].currentText()
+                    if name == x[0]:
+                        if y == ">":
+                            if not float(num) > float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th const item should > " + str(x[1]))
+                                return False
+                        if y == "<":
+                            if not float(num) < float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th const item should < " + str(x[1]))
+                                return False
+                        if y == ">=":
+                            if not float(num) >= float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th const item should >= " + str(x[1]))
+                                return False
+                        if y == "<=":
+                            if not float(num) <= float(x[1]):
+                                file1.close()
+                                self.popErrorWindow(
+                                    "Warning: Value at " + str(index + 1) + "th const item should <= " + str(x[1]))
+                                return False
+            file1.close()
+            return True
+        except:
+            self.popErrorWindow("Fail to read boundary.txt")
+            return False
 
-
-    def checknum(self, text, i):
+    def checknum(self, text, i, vary):
         y = re.fullmatch("[0-9]*[.][0-9]*", text)
         x = re.fullmatch("[0-9]*", text)
         if (y is None) and (x is None):
-            self.popErrorWindow("Constant must be numbers at " + str(i+1) + "th const item.")
+            if vary:
+                self.popErrorWindow("Range must be integers/float at " + str(i + 1) + "th vary item.")
+            if not vary:
+                self.popErrorWindow("Constant value must be integers/float at " + str(i + 1) + "th const item.")
             return False
         return True
 

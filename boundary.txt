@@ -1,0 +1,3 @@
+Keithley 2440 cur (A)<10
+Angle<=360
+a<10
