@@ -340,8 +340,8 @@ class parameter(object):
             return False
 
     def checknum(self, text, i, vary):
-        y = re.fullmatch("[0-9]*[.][0-9]*", text)
-        x = re.fullmatch("[0-9]*", text)
+        y = re.fullmatch("[0-9]*[.][0-9]*|[-][0-9]*[.][0-9]*", text)
+        x = re.fullmatch("[0-9]*|[-][0-9]*", text)
         if (y is None) and (x is None):
             if vary:
                 self.popErrorWindow("Range must be integers/float at " + str(i + 1) + "th vary item.")

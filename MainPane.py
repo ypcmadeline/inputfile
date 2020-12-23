@@ -97,7 +97,7 @@ class Setting(object):
         self.openwindow(int(const), int(vary))
 
     def checknum(self, text):
-        if text.isdigit():
+        if not text.isdigit():
             self.popErrorWindow("Input must be integer")
             return False
         return True

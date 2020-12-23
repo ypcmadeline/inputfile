@@ -61,10 +61,11 @@ class inputFile:
             # else:
             self.file_list[t - n] = self.write_list[n - 1][i]
             if len(self.file_list) == t and n == 1:
+                # self.file_list.reverse()
                 # self.f.csv_write = csv.writer(self.f)
-                # self.f.csv_write.writerow(self.file_list + self.const_value)
+                # self.f.csv_write.writerow(self.file_list[::-1] + self.const_value)
                 # self.f.flush()
-                print(self.file_list + self.const_value)
+                print(self.file_list[::-1] + self.const_value)
             self.recurse(n - 1, t)
 
     def popErrorWindow(self, msg):
