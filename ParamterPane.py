@@ -67,7 +67,7 @@ class parameter(object):
 
         for i in range(self.vary):
             self.name.append(QtWidgets.QLabel(self.gridLayoutWidget))
-            self.name[i].setText("Varying paramter" + str(i + 1))
+            self.name[i].setText("Varying parameter" + str(i + 1))
             self.gridLayout.addWidget(self.name[i], i, 0, 1, 1)
             self.name[i].adjustSize()
 
@@ -120,7 +120,7 @@ class parameter(object):
 
         for i in range(self.const):
             self.cname.append(QtWidgets.QLabel(self.gridLayoutWidget))
-            self.cname[i].setText("Constant paramter" + str(i + 1))
+            self.cname[i].setText("Constant parameter" + str(i + 1))
             self.gridLayout.addWidget(self.cname[i], i + self.vary, 0, 1, 1)
             self.cname[i].adjustSize()
 
@@ -137,7 +137,7 @@ class parameter(object):
             self.ccombo[i].adjustSize()
 
             self.cother.append(QtWidgets.QLabel(self.gridLayoutWidget))
-            self.cother[i].setText("Other")
+            self.cother[i].setText("Other:")
             self.gridLayout.addWidget(self.cother[i], i + self.vary, 2, 1, 1)
             self.cother[i].adjustSize()
 
@@ -258,9 +258,11 @@ class parameter(object):
             check1 = self.checknum(num1, i, True)
             check2 = self.checknum(num2, i, True)
             check3 = numbers[2].isdigit()
+            num3 = int(numbers[2])
+            check4 = num3 >= 0
             checkbound1 = self.checkboundary(num1, i, True)
             checkbound2 = self.checkboundary(num2, i, True)
-            if not (check1 and check2 and check3):
+            if not (check1 and check2 and check3 and check4):
                 self.popErrorWindow("Wrong input range format at " + str(i + 1) + "th vary item.")
             return check1 and check2 and check3 and checkbound1 and checkbound2
         except:
@@ -340,9 +342,8 @@ class parameter(object):
             return False
 
     def checknum(self, text, i, vary):
-        y = re.fullmatch("[0-9]*[.][0-9]*|[-][0-9]*[.][0-9]*", text)
-        x = re.fullmatch("[0-9]*|[-][0-9]*", text)
-        if (y is None) and (x is None):
+        y = re.fullmatch("[0-9]*[.][0-9]*|[-][0-9]*[.][0-9]*|[0-9]*|[-][0-9]*", text)
+        if y is None:
             if vary:
                 self.popErrorWindow("Range must be integers/float at " + str(i + 1) + "th vary item.")
             if not vary:
