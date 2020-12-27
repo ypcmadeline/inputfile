@@ -233,8 +233,6 @@ class parameter(object):
                 self.combo[i].setCurrentText("Other")
                 self.pp[i].savename = self.othername[i].text()
             self.pp[i].setname(self.combo[i].currentText())
-            print("here is change tgt")
-            print(self.pp[i].savename)
         else:
             if self.cothername[i].text() != "":
                 self.ccombo[i].setCurrentText("Other")
