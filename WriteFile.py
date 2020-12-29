@@ -21,7 +21,7 @@ class inputFile:
         self.write_list = []
         self.file_list = []
         self.csv = name + ".csv"
-        # self.f = open(self.csv, 'w+', newline='')
+        self.f = open(self.csv, 'w+', newline='')
 
         try:
             for i in range(len(varyParameter)):
@@ -46,9 +46,9 @@ class inputFile:
 
     def writeHead(self):
         name_list = self.vary_name + self.const_name
-        # self.f.csv_write = csv.writer(self.f)
-        # self.f.csv_write.writerow(name_list)
-        # self.f.flush()
+        self.f.csv_write = csv.writer(self.f)
+        self.f.csv_write.writerow(name_list)
+        self.f.flush()
         print(name_list)
 
     def recurse(self, n, t):
@@ -62,9 +62,9 @@ class inputFile:
             self.file_list[t - n] = self.write_list[n - 1][i]
             if len(self.file_list) == t and n == 1:
                 # self.file_list.reverse()
-                # self.f.csv_write = csv.writer(self.f)
-                # self.f.csv_write.writerow(self.file_list[::-1] + self.const_value)
-                # self.f.flush()
+                self.f.csv_write = csv.writer(self.f)
+                self.f.csv_write.writerow(self.file_list[::-1] + self.const_value)
+                self.f.flush()
                 print(self.file_list[::-1] + self.const_value)
             self.recurse(n - 1, t)
 
